@@ -1,13 +1,13 @@
 let modInfo = {
-	name: "The ??? Tree",
-	id: "mymod",
-	author: "nobody",
-	pointsName: "points",
+	name: "The 5 hours Tree",
+	id: "@everyone1",
+	author: "@everyone",
+	pointsName: "seconds",
 	discordName: "",
 	discordLink: "",
-	initialStartPoints: new Decimal (10), // Used for hard resets and new players
+	initialStartPoints: new Decimal (0), // Used for hard resets and new players
 	
-	offlineLimit: 1,  // In hours
+	offlineLimit: 5,  // In hours
 }
 
 // Set your version in num and name
@@ -42,7 +42,25 @@ function getPointGen() {
 		return new Decimal(0)
 
 	let gain = new Decimal(1)
-	return gain
+  if (hasUpgrade("m",11)){
+    gain=gain.plus(1)
+  }
+  if (hasUpgrade("m",12)){
+    gain=gain.times(player.points.max(10).log10())
+  }
+  if (hasUpgrade("m",13)){
+    gain=gain.times(new Decimal(player.timePlayed).max(10).log10())
+  }
+  if (hasUpgrade("m",13)){
+    gain=gain.times(new Decimal(player.timePlayed).max(10).log10().plus(9).log10()).times(player.m.points.pow(0.2).max(1))
+  }
+  if (player.points.gte(60))gain=gain.div(player.points.div(60).pow(hasChallenge("m",12)?0:1))
+  if (player.points.gte(3600))gain=gain.div(player.points.div(3600).pow(2))
+  if (player.points.gte(17000))gain=gain.div(new Decimal(1000).div(new Decimal(18000).sub(player.points)))
+  if (inChallenge("m",11)||inChallenge("m",12)||inChallenge("m",21)){
+    return new Decimal(0)
+  }
+	return gain.min(5*3600)
 }
 
 // You can add non-layer related variables that should to into "player" and be saved here, along with default values
@@ -64,7 +82,7 @@ function isEndgame() {
 
 // You can change this if you have things that can be messed up by long tick lengths
 function maxTickLength() {
-	return(3600) // Default is 1 hour which is just arbitrarily large
+	return(1) // Default is 1 hour which is just arbitrarily large
 }
 
 // Use this if you need to undo inflation from an older version. If the version is older than the version that fixed the issue,
